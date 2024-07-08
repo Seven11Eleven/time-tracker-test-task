@@ -18,24 +18,31 @@ func NewUserController(userRepo *db.UserRepository) *UserController {
 }
 
 func (uc *UserController) GetUsers(c *gin.Context) {
-	limitStr := c.DefaultQuery("limit", "10")
-	offsetStr := c.DefaultQuery("offset", "10")
+	limit := 10
+	offset := 0
 
-	limit, err := strconv.Atoi(limitStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if limitStr := c.Query("limit"); limitStr != "" {
+		parsedLimit, err := strconv.Atoi(limitStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit value"})
+			return
+		}
+		limit = parsedLimit
 	}
-	offset, err := strconv.Atoi(offsetStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+
+	if offsetStr := c.Query("offset"); offsetStr != "" {
+		parsedOffset, err := strconv.Atoi(offsetStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset value"})
+			return
+		}
+		offset = parsedOffset
 	}
 
 	filter := make(map[string]interface{})
 	allowedFilters := []string{"passport_number", "surname", "name", "patronymic", "address"}
 
-	for _, filterReq := range allowedFilters { //vmesto if else if else :D
+	for _, filterReq := range allowedFilters {
 		if filterVal := c.Query(filterReq); filterVal != "" {
 			filter[filterReq] = filterVal
 		}
@@ -49,6 +56,7 @@ func (uc *UserController) GetUsers(c *gin.Context) {
 
 	c.JSON(http.StatusOK, users)
 }
+
 
 func (uc *UserController) AddUser(c *gin.Context) {
 	var user models.User
