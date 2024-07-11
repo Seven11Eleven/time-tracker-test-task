@@ -24,6 +24,7 @@ services:
       POSTGRES_NAME: time_tracker
     depends_on:
       - db
-
+    volumes:
+      - ./logs:/var/log/myapp
 volumes:
   db_data:
