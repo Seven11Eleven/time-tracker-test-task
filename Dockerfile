@@ -21,6 +21,7 @@ RUN --mount=type=cache,target=/var/cache/apk \
     apk --update add \
         ca-certificates \
         tzdata \
+        postgresql-client \
         && \
         update-ca-certificates
 
@@ -34,13 +35,16 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
-# Create the log directory and give proper permissions
-RUN mkdir -p /var/log/myapp && chown -R appuser:appuser /var/log/myapp
 
-# Switch to non-privileged user
+RUN mkdir -p /migrations && chown -R appuser:appuser /migrations
+
+RUN mkdir -p /seeds && chown -R appuser:appuser /seeds
+
 USER appuser
 
 COPY --from=build /bin/server /bin/
+COPY ./migrations /migrations
+COPY ./seeds /seeds
 
 EXPOSE 8080
 
