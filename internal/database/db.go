@@ -18,7 +18,7 @@ func ConnectDatabase() *pgxpool.Pool {
 	port 	 := os.Getenv("POSTGRES_PORT")
 	user 	 := os.Getenv("POSTGRES_USER")
 	password := os.Getenv("POSTGRES_PASSWORD")
-	dbname   := os.Getenv("POSTGRES_DB")
+	dbname   := os.Getenv("POSTGRES_NAME")
 
 	connString := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", user, password, host, port, dbname)
 

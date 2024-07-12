@@ -22,18 +22,18 @@ func NewTaskController(taskRepo *db.TaskRepository) *TaskController {
 }
 
 // CreateTags godoc
-//	@Summary		Get user tasks by period
-//	@Description	Get tasks for a user within a specified time period
-//	@Tags			tasks
-//	@Accept			json
-//	@Produce		json
-//	@Param			userID	path		int		true	"User ID"
-//	@Param			start	query		string	true	"Start time in RFC3339 format"
-//	@Param			end		query		string	true	"End time in RFC3339 format"
-//	@Success		200		{array}		models.Task
-//	@Failure		400		{object}	gin.H
-//	@Failure		500		{object}	gin.H
-//	@Router			/users/{userID}/tasks [get]
+// @Summary     Get user tasks by period
+// @Description Get tasks for a user within a specified time period
+// @Tags        tasks
+// @Accept      json
+// @Produce     json
+// @Param       userID path     int    true "User ID"
+// @Param       start  query    string true "Start time in RFC3339 format"
+// @Param       end    query    string true "End time in RFC3339 format"
+// @Success     200    {array}  models.Task
+// @Failure     400    {object} gin.H
+// @Failure     500    {object} gin.H
+// @Router      /users/{userID}/tasks [get]
 func (tc *TaskController) GetUserTasksByPeriod(c *gin.Context) {
 	userID, err := strconv.Atoi(c.Param("userID"))
 	if err != nil {
@@ -86,23 +86,23 @@ func (tc *TaskController) GetUserTasksByPeriod(c *gin.Context) {
 	c.JSON(http.StatusOK, tasks)
 }
 
-//	@Summary		Start a new task
-//	@Description	Start tracking time for a new task
-//	@Tags			tasks
-//	@Accept			json
-//	@Produce		json
-//	@Param			task	body		models.Request	true	"Task to start"
-//	@Success		201		{object}	models.Task
-//	@Failure		400		{object}	gin.H
-//	@Failure		500		{object}	gin.H
-//	@Router			/tasks/start [post]
+// @Summary     Start a new task
+// @Description Start tracking time for a new task
+// @Tags        tasks
+// @Accept      json
+// @Produce     json
+// @Param       task body     models.Request true "Task to start"
+// @Success     201  {object} models.Task
+// @Failure     400  {object} gin.H
+// @Failure     500  {object} gin.H
+// @Router      /tasks/start [post]
 func (tc *TaskController) StartTask(c *gin.Context) {
 	var req models.Request
 
 	if err := c.BindJSON(&req); err != nil {
 		logger.Logger.WithFields(logrus.Fields{
 			"error": err,
-		}).Error("не удалось забиндить модель с данными")
+		}).Error("Не удалось забиндить модель с данными")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверный запрос"})
 		return
 	}
@@ -112,7 +112,7 @@ func (tc *TaskController) StartTask(c *gin.Context) {
 			"userID": int(req.UserID),
 			"description": req.Description,
 			"error": err,
-		}).Error("не удалось начать таску")
+		}).Error("Не удалось начать таску")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -125,23 +125,23 @@ func (tc *TaskController) StartTask(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"msg": "Задача взята, тайм-треккинг начат"})
 }
 
-//	@Summary		End a task
-//	@Description	End tracking time for a task
-//	@Tags			tasks
-//	@Accept			json
-//	@Produce		json
-//	@Param			taskID	path		int	true	"Task ID"
-//	@Success		200		{object}	models.Task
-//	@Failure		400		{object}	gin.H
-//	@Failure		500		{object}	gin.H
-//	@Router			/tasks/end/{taskID} [post]
+// @Summary     End a task
+// @Description End tracking time for a task
+// @Tags        tasks
+// @Accept      json
+// @Produce     json
+// @Param       taskID path     int true "Task ID"
+// @Success     200    {object} models.Task
+// @Failure     400    {object} gin.H
+// @Failure     500    {object} gin.H
+// @Router      /tasks/end/{taskID} [post]
 func (tc *TaskController) EndTask(c *gin.Context) {
 	taskID, err := strconv.Atoi(c.Param("taskID"))
 	if err != nil {
 		logger.Logger.WithFields(logrus.Fields{
 			"taskID": taskID,
 			"error": err,
-		}).Error("неверная айди таски")
+		}).Error("Неверная айди таски")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверная айдишка начатой задачи"})
 		return
 	}
@@ -150,13 +150,13 @@ func (tc *TaskController) EndTask(c *gin.Context) {
 		logger.Logger.WithFields(logrus.Fields{
 			"taskID": taskID,
 			"error": err,
-		}).Error("не удалось окончить таску")
+		}).Error("Не удалось окончить таску")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	logger.Logger.WithFields(logrus.Fields{
 		"taskID": taskID,
-	}).Info("Задача была окончена")
+	}).Info("Таска была окончена")
 
 	c.JSON(http.StatusOK, gin.H{"msg": "Выполнение задачи окончено, тайм-треккинг остановлен"})
 }

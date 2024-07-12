@@ -20,22 +20,24 @@ func NewUserController(userRepo *db.UserRepository) *UserController {
 	return &UserController{userRepo: userRepo}
 }
 
-// @Summary		Get users
-// @Description	Get list of users with pagination and filtering
-// @Tags			users
-// @Accept			json
-// @Produce		json
-// @Param			limit			query		int		false	"Limit"
-// @Param			offset			query		int		false	"Offset"
-// @Param			passport_number	query		string	false	"Passport Number"
-// @Param			surname			query		string	false	"Surname"
-// @Param			name			query		string	false	"Name"
-// @Param			patronymic		query		string	false	"Patronymic"
-// @Param			address			query		string	false	"Address"
-// @Success		200				{array}		models.User
-// @Failure		400				{object}	gin.H
-// @Failure		500				{object}	gin.H
-// @Router			/users [get]
+// GetUsers godoc
+// @Summary Получить всех пользователей
+// @Description Возвращает список всех пользователей с возможностью фильтрации, пагинации и сортировки
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param limit query int false "Количество записей для возврата" default(1)
+// @Param offset query int false "Смещение записей для возврата" default(0)
+// @Param passport_number query string false "Номер паспорта"
+// @Param surname query string false "Фамилия"
+// @Param name query string false "Имя"
+// @Param patronymic query string false "Отчество"
+// @Param address query string false "Адрес"
+// @Success 200 {array} models.User
+// @Failure 400 {object} gin.H{"error": "Invalid limit value"}
+// @Failure 500 {object} gin.H{"error": "Internal server error"}
+// @Router /users [get]
+
 func (uc *UserController) GetUsers(c *gin.Context) {
 	limit := 1
 	offset := 0
@@ -46,7 +48,7 @@ func (uc *UserController) GetUsers(c *gin.Context) {
 			logger.Logger.WithFields(logrus.Fields{
 				"limit": limitStr,
 				"error": err,
-			}).Error("неверное значение указанного лимита")
+			}).Error("Неверное значение указанного лимита")
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit value"})
 			return
 		}
@@ -59,7 +61,7 @@ func (uc *UserController) GetUsers(c *gin.Context) {
 			logger.Logger.WithFields(logrus.Fields{
 				"offset": offsetStr,
 				"error":  err,
-			}).Error("указано неверное значение отступа оффсета")
+			}).Error("Указано неверное значение отступа ")
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid offset value"})
 			return
 		}
@@ -90,25 +92,24 @@ func (uc *UserController) GetUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 
-// ShowAccount godoc
-//
-//	@Summary		Show an account
-//	@Description	get string by ID
-//	@Tags			accounts
-//	@Accept			json
-//	@Produce		json
-//	@Param			id	path		int	true	"Account ID"
-//	@Success		200	{object}	model.Account
-//	@Failure		400	{object}	httputil.HTTPError
-//	@Failure		404	{object}	httputil.HTTPError
-//	@Failure		500	{object}	httputil.HTTPError
-//	@Router			/accounts/{id} [get]
+// AddUser godoc
+// @Summary Добавить нового пользователя
+// @Description Добавляет нового пользователя в систему
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param user body models.User true "Данные пользователя"
+// @Success 201 {object} gin.H{"msg": "Пользователь добавлен!"}
+// @Failure 400 {object} gin.H{"error": "Неверный запрос"}
+// @Failure 500 {object} gin.H{"error": "Internal server error"}
+// @Router /users [post]
+
 func (uc *UserController) AddUser(c *gin.Context) {
 	var user models.User
 	if err := c.BindJSON(&user); err != nil {
 		logger.Logger.WithFields(logrus.Fields{
 			"error": err,
-		}).Error("не удалось забиндить модель с данными")
+		}).Error("Не удалось забиндить модель с данными")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверный запрос"})
 		return
 	}
@@ -129,22 +130,22 @@ func (uc *UserController) AddUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"msg": "Пользователь добавлен!"})
 }
 
-// @Summary		Update user
-// @Description	Update user information
-// @Tags			users
-// @Accept			json
-// @Produce		json
-// @Param			user	body		models.User	true	"User to update"
-// @Success		200		{object}	models.User
-// @Failure		400		{object}	gin.H
-// @Failure		500		{object}	gin.H
-// @Router			/users [put]
+// @Summary     Update user
+// @Description Update user information
+// @Tags        users
+// @Accept      json
+// @Produce     json
+// @Param       user body     models.User true "User to update"
+// @Success     200  {object} models.User
+// @Failure     400  {object} gin.H
+// @Failure     500  {object} gin.H
+// @Router      /users [put]
 func (uc *UserController) UpdateUser(c *gin.Context) {
 	var user models.User
 	if err := c.BindJSON(&user); err != nil {
 		logger.Logger.WithFields(logrus.Fields{
 			"error": err,
-		}).Error("не удалось забиндить модель с данными")
+		}).Error("Не удалось забиндить модель с данными")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверный запрос"})
 		return
 	}
@@ -160,27 +161,27 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 
 	logger.Logger.WithFields(logrus.Fields{
 		"user": user,
-	}).Info("ура, информация об пользователе была успешно обновлена")
+	}).Info("Информация об пользователе была успешно обновлена")
 	c.JSON(http.StatusOK, gin.H{"msg": "Информация пользователя была успешно изменена!"})
 }
 
-// @Summary		Delete user
-// @Description	Delete a user by ID
-// @Tags			users
-// @Accept			json
-// @Produce		json
-// @Param			userID	path		int	true	"User ID"
-// @Success		200		{object}	gin.H
-// @Failure		400		{object}	gin.H
-// @Failure		500		{object}	gin.H
-// @Router			/users/{userID} [delete]
+// @Summary     Delete user
+// @Description Delete a user by ID
+// @Tags        users
+// @Accept      json
+// @Produce     json
+// @Param       userID path     int true "User ID"
+// @Success     200    {object} gin.H
+// @Failure     400    {object} gin.H
+// @Failure     500    {object} gin.H
+// @Router      /users/{userID} [delete]
 func (uc *UserController) DeleteUser(c *gin.Context) {
 	userID, err := strconv.Atoi(c.Param("userID"))
 	if err != nil {
 		logger.Logger.WithFields(logrus.Fields{
 			"userID": c.Param("userID"),
 			"error": err,
-		}).Error("Неверный юзер айди")
+		}).Error("Неверный юзер-айди")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверная айдишка пользователя"})
 		return
 	}
@@ -188,13 +189,13 @@ func (uc *UserController) DeleteUser(c *gin.Context) {
 		logger.Logger.WithFields(logrus.Fields{
 			"userID": c.Param("userID"),
 			"error": err,
-		}).Error("Попытка удалить пользователя не увенчалась успехом, увы!")
+		}).Error("Не получилось удалить юзера")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	logger.Logger.WithFields(logrus.Fields{
 		"userID": c.Param("userID"),
 		"error": err,
-	}).Info("Пользователь был удален")
+	}).Info("Юзер был удален")
 	c.JSON(http.StatusOK, gin.H{"msg": "Пользователь был успешно удален"})
 }
