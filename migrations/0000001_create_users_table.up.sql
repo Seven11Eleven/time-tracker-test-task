@@ -8,3 +8,5 @@ CREATE TABLE users (
     created_at TIMESTAMPTZ NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL
 );
+
+COMMIT;

@@ -8,3 +8,6 @@ CREATE TABLE tasks (
     updated_at TIMESTAMPTZ NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id)
 );
+
+
+COMMIT;
